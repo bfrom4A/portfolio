@@ -47,7 +47,16 @@
     .hero { min-height: 680px; display: grid; grid-template-columns: 1.1fr .9fr; gap: 56px; align-items: center; padding: 86px 0 80px; }
     .eyebrow { letter-spacing: .18em; text-transform: uppercase; font-size: .75rem; font-weight: 800; }
     h1 { max-width: 760px; margin: 18px 0; font-size: clamp(3.2rem, 8vw, 6.8rem); line-height: .96; letter-spacing: -.07em; }
-    h1 em { color: var(--cyan); font-style: normal; }
+    h1 em, h2, h3 {
+      color: transparent;
+      font-style: normal;
+      background: linear-gradient(112deg, var(--cyan) 18%, #ffffff 34%, var(--pink) 47%, var(--purple) 61%, var(--cyan) 82%);
+      background-size: 240% 100%;
+      background-clip: text;
+      -webkit-background-clip: text;
+      animation: holographicSheen 9s ease-in-out infinite;
+      filter: drop-shadow(0 0 18px rgba(99,230,255,.18));
+    }
     .lead { max-width: 640px; color: var(--muted); font-size: 1.15rem; }
     .actions { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 30px; }
     .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 12px 20px; font-weight: 700; transition: .25s ease; }
@@ -125,6 +134,10 @@
     .toast { position: fixed; right: 22px; bottom: 22px; z-index: 40; max-width: min(380px, calc(100% - 44px)); padding: 13px 16px; border: 1px solid var(--cyan); border-radius: 12px; color: var(--text); background: var(--panel-strong); box-shadow: var(--shadow); opacity: 0; transform: translateY(12px); pointer-events: none; transition: .25s ease; }
     .toast.visible { opacity: 1; transform: none; }
     .toast.error { border-color: var(--pink); }
+    .stats-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: -30px auto 20px; }
+    .stat { padding: 16px 18px; border: 1px solid var(--line); border-radius: 14px; background: rgba(18,23,43,.58); }
+    .stat strong { display: block; color: var(--cyan); font-size: 1.7rem; line-height: 1.1; }
+    .stat small { color: var(--muted); }
     .maintenance-screen { display: none; position: fixed; inset: 0; z-index: 25; place-items: center; padding: 24px; text-align: center; background: var(--bg); }
     .maintenance-screen.active { display: grid; }
     .maintenance-card { width: min(520px, 100%); }
@@ -135,6 +148,7 @@
     .reveal { opacity: 0; transform: translateY(22px); transition: .7s ease; }
     .reveal.visible { opacity: 1; transform: none; }
     @keyframes float { 50% { transform: translateY(-13px) rotate(4deg); } }
+    @keyframes holographicSheen { 0%, 100% { background-position: 100% 50%; } 50% { background-position: 0% 50%; } }
     @media (max-width: 820px) {
       .menu { display: block; }
       .nav-links { display: none; position: absolute; top: 72px; left: 0; right: 0; padding: 18px 20px; flex-direction: column; background: var(--panel-strong); border-bottom: 1px solid var(--line); }
@@ -143,6 +157,7 @@
       .hero { padding-top: 58px; }
       .hero-card { min-height: 330px; }
       .two, .three { grid-template-columns: 1fr; }
+      .stats-strip { grid-template-columns: repeat(2, 1fr); margin-top: 0; }
       .section-head { display: block; }
       .section-intro { margin-top: 15px; }
     }
@@ -172,6 +187,13 @@
         <div class="orb"></div><img id="profile-photo" class="profile-photo" alt="Profile photo">
         <div class="status"><b>Available</b> for selected projects</div>
       </div>
+    </section>
+
+    <section class="container stats-strip" aria-label="Portfolio statistics">
+      <div class="stat"><strong id="live-viewers">0</strong><small>Live viewers</small></div>
+      <div class="stat"><strong id="projects-count">0</strong><small>Projects made</small></div>
+      <div class="stat"><strong id="sessions-count">0</strong><small>Code sessions done</small></div>
+      <div class="stat"><strong id="clients-count">0</strong><small>Clients</small></div>
     </section>
 
     <section id="about">
@@ -254,7 +276,7 @@
         <nav class="admin-tabs" aria-label="Editor sections"><button class="admin-tab active" data-tab="profile">Profile</button><button class="admin-tab" data-tab="content">Page content</button><button class="admin-tab" data-tab="skills">Skills & background</button><button class="admin-tab" data-tab="education">Education</button><button class="admin-tab" data-tab="portfolio">Portfolio & sites</button><button class="admin-tab" data-tab="inquiries">Inquiries</button></nav>
         <div>
           <div class="admin-panel active" data-panel="profile"><div class="card"><h3>Profile details</h3><form id="profile-form" class="admin-form"><div class="admin-row"><label>Display name<input name="name" required></label><label>GitHub image URL<input name="photo" type="url" placeholder="https://github.com/user/repo/blob/main/photo.jpg"></label></div><label>Headline<input name="headline" required></label><label>Bio<textarea name="bio" required></textarea></label><label>Location<input name="location"></label><button class="button primary" type="submit">Save profile</button><small class="form-status muted" data-status="profile"></small></form></div></div>
-          <div class="admin-panel" data-panel="content"><div class="card"><h3>Page content</h3><form id="content-form" class="admin-form"><label class="toggle-label"><input name="maintenance" type="checkbox"> Enable maintenance mode <small>Visitors will see the maintenance screen while this is enabled.</small></label><label>Services <small>One item per line: title | description</small><textarea name="services"></textarea></label><label>Favorite tools<input name="tools"></label><label>Testimonials <small>One item per line: quote | author</small><textarea name="testimonials"></textarea></label><div class="admin-row"><label>Contact email<input name="email" type="email"></label><label>Social links <small>One item per line: label | URL</small><textarea name="socials"></textarea></label></div><button class="button primary" type="submit">Save page content</button><small class="form-status muted" data-status="content"></small></form></div></div>
+          <div class="admin-panel" data-panel="content"><div class="card"><h3>Page content</h3><form id="content-form" class="admin-form"><label class="toggle-label"><input name="maintenance" type="checkbox"> Enable maintenance mode <small>Visitors will see the maintenance screen while this is enabled.</small></label><div class="admin-row"><label>Projects made<input name="projects" type="number" min="0"></label><label>Code sessions done<input name="sessions" type="number" min="0"></label></div><label>Clients<input name="clients" type="number" min="0"></label><label>Services <small>One item per line: title | description</small><textarea name="services"></textarea></label><label>Favorite tools<input name="tools"></label><label>Testimonials <small>One item per line: quote | author</small><textarea name="testimonials"></textarea></label><div class="admin-row"><label>Contact email<input name="email" type="email"></label><label>Social links <small>One item per line: label | URL</small><textarea name="socials"></textarea></label></div><button class="button primary" type="submit">Save page content</button><small class="form-status muted" data-status="content"></small></form></div></div>
           <div class="admin-panel" data-panel="skills"><div class="card"><h3>Skills and background</h3><form id="skills-form" class="admin-form"><label>Skills <small>One skill per line</small><textarea name="skills" placeholder="Project coordination&#10;Research"></textarea></label><label>Background / experience <small>One role per line, using: year | role | description</small><textarea name="background" placeholder="2023 - Now | Independent VA | Supporting founders..."></textarea></label><button class="button primary" type="submit">Save background</button><small class="form-status muted" data-status="skills"></small></form></div></div>
           <div class="admin-panel" data-panel="education"><div class="card"><h3>Education and credentials</h3><form id="education-form" class="admin-form"><label>Education <small>One item per line, using: year | school | qualification</small><textarea name="education" placeholder="2020 | University | Business Administration"></textarea></label><label>Certifications <small>One item per line</small><textarea name="certifications"></textarea></label><button class="button primary" type="submit">Save education</button><small class="form-status muted" data-status="education"></small></form></div></div>
           <div class="admin-panel" data-panel="portfolio"><div class="card"><h3>Add a portfolio project or live website</h3><form id="portfolio-form" class="admin-form"><label>Project title<input name="title" required></label><div class="admin-row"><label>Website URL<input name="url" type="url" placeholder="https://example.com" required></label><label>Cover image URL<input name="image" type="url" placeholder="https://..."></label></div><label>Description<textarea name="description"></textarea></label><button class="button primary" type="submit">Add project</button><small class="form-status muted" data-status="portfolio"></small></form><div id="admin-projects" class="admin-list" style="margin-top:22px"></div></div></div>
@@ -270,7 +292,7 @@
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
     import { getAuth, GithubAuthProvider, onAuthStateChanged, signInWithPopup, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, deleteUser } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-    import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+    import { getFirestore, doc, getDoc, setDoc, deleteDoc, runTransaction, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
     // Replace these values with the Web app config from Firebase Console.
     const firebaseConfig = {
@@ -286,6 +308,7 @@
     const defaultContent = {
       profile: { name: 'Alex Morgan', photo: '', headline: 'Calm systems. Bold results.', bio: 'Hi, I’m Alex — a detail-driven virtual assistant helping founders and growing teams turn busywork into clear, reliable momentum.', location: 'Based remotely · Working across time zones' },
       maintenance: false,
+      metrics: { projects: 3, sessions: 0, clients: 0 },
       services: [['Executive support', 'Calendar management, inbox organization, travel research, meeting notes, and day-to-day admin.'], ['Content & social', 'Content scheduling, community support, simple graphics, repurposing, and consistent brand presence.'], ['Operations', 'SOPs, project coordination, CRM upkeep, research, data entry, and workflow improvements.']],
       tools: 'Notion · Asana · ClickUp · Google Workspace · Slack · Canva · Trello · Airtable · Calendly · Loom',
       testimonials: [['Alex brought order to a project that felt impossible. I finally had space to focus on the creative work.', 'Jamie R., Creative Founder'], ['Proactive, thoughtful, and incredibly dependable. Alex feels like a true extension of our team.', 'Morgan T., Agency Director'], ['The systems Alex created still save us hours every week. An absolute joy to work with.', 'Taylor K., Coach']],
@@ -305,6 +328,7 @@
         ...defaultContent,
         ...saved,
         profile: { ...defaultContent.profile, ...(saved.profile || {}) },
+        metrics: { ...defaultContent.metrics, ...(saved.metrics || {}) },
         contact: { ...defaultContent.contact, ...(saved.contact || {}), socials: rowValues(saved.contact?.socials, defaultContent.contact.socials, ['label', 'url']) },
         services: rowValues(saved.services, defaultContent.services, ['title', 'description']),
         testimonials: rowValues(saved.testimonials, defaultContent.testimonials, ['quote', 'author']),
@@ -319,6 +343,8 @@
     let auth = null;
     let db = null;
     let sessionTimer = null;
+    let presenceTimer = null;
+    let presenceRef = null;
     const sessionLimit = 5 * 60 * 1000;
 
     if (hasFirebase) {
@@ -326,6 +352,7 @@
       auth = getAuth(app);
       db = getFirestore(app);
       onAuthStateChanged(auth, user => { if (!user) closeAdmin(); });
+      onSnapshot(doc(db, 'siteContent', 'main'), snapshot => { if (snapshot.exists()) { content = normalizeContent(snapshot.data()); saveLocal(); renderPublicDetails(); renderPortfolio(); if (admin.classList.contains('active')) fillForms(); } });
     }
 
     const menu = document.querySelector('.menu');
@@ -391,6 +418,9 @@
       document.querySelector('#education-form [name="certifications"]').value = content.certifications.join('\n');
       document.querySelector('#content-form [name="services"]').value = content.services.map(item => item.join(' | ')).join('\n');
       document.querySelector('#content-form [name="maintenance"]').checked = content.maintenance;
+      document.querySelector('#content-form [name="projects"]').value = content.metrics.projects;
+      document.querySelector('#content-form [name="sessions"]').value = content.metrics.sessions;
+      document.querySelector('#content-form [name="clients"]').value = content.metrics.clients;
       document.querySelector('#content-form [name="tools"]').value = content.tools;
       document.querySelector('#content-form [name="testimonials"]').value = content.testimonials.map(item => item.join(' | ')).join('\n');
       document.querySelector('#content-form [name="email"]').value = content.contact.email;
@@ -429,6 +459,9 @@
       document.getElementById('education-content').innerHTML = `<div class="card"><h3>Education</h3>${education}</div><div class="card"><h3>Certifications</h3>${certifications}</div>`;
       document.querySelectorAll('.service-card').forEach((card, index) => { const service = content.services[index]; if (service) { card.querySelector('h3').textContent = service[0]; card.querySelector('p').textContent = service[1]; } });
       document.getElementById('tools-text').textContent = content.tools;
+      document.getElementById('projects-count').textContent = content.metrics.projects;
+      document.getElementById('sessions-count').textContent = content.metrics.sessions;
+      document.getElementById('clients-count').textContent = content.metrics.clients;
       document.getElementById('testimonials-grid').innerHTML = content.testimonials.map(item => `<blockquote class="card">${item[0]}<footer>— ${item[1]}</footer></blockquote>`).join('');
       document.querySelector('.contact-list a').textContent = content.contact.email;
       document.querySelector('.contact-list a').href = `mailto:${content.contact.email}`;
@@ -437,6 +470,16 @@
     }
     function renderPortfolio() {
       document.getElementById('portfolio-grid').innerHTML = content.portfolio.map(project => `<article class="card project"><div class="project-cover" style="${project.image ? `background-image:url('${project.image}')` : ''}"><strong>${project.title}</strong></div><div class="project-body"><p class="muted">${project.description || ''}</p><div class="tags"><a class="tag" href="${project.url}" target="_blank" rel="noreferrer">Open site ↗</a></div><iframe class="preview-frame" src="${project.url}" title="Live preview of ${project.title}" loading="lazy"></iframe></div></article>`).join('');
+    }
+    async function startPresence() {
+      if (!db || location.protocol === 'file:') return;
+      const sessionId = crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      presenceRef = doc(db, 'liveViewers', sessionId);
+      const heartbeat = () => setDoc(presenceRef, { lastSeen: serverTimestamp() }, { merge: true }).catch(() => {});
+      heartbeat();
+      presenceTimer = setInterval(heartbeat, 30000);
+      onSnapshot(collection(db, 'liveViewers'), snapshot => { const activeSince = Date.now() - 90000; const active = snapshot.docs.filter(item => item.data().lastSeen?.toMillis?.() > activeSince).length; document.getElementById('live-viewers').textContent = active; });
+      window.addEventListener('beforeunload', () => { clearInterval(presenceTimer); deleteDoc(presenceRef).catch(() => {}); }, { once: true });
     }
     function renderAdminProjects() {
       document.getElementById('admin-projects').innerHTML = content.portfolio.map((project, index) => `<div class="admin-item"><strong>${project.title}</strong><span class="muted">${project.url}</span><button class="button" data-remove-project="${index}" style="margin-top:10px">Remove</button></div>`).join('');
@@ -457,7 +500,7 @@
     admin.addEventListener('change', resetSessionTimer);
     document.querySelector('.admin-tabs').addEventListener('click', event => { const tab = event.target.closest('.admin-tab'); if (!tab) return; event.preventDefault(); const panel = document.querySelector(`[data-panel="${tab.dataset.tab}"]`); if (!panel) return; document.querySelectorAll('.admin-tab, .admin-panel').forEach(item => item.classList.remove('active')); tab.classList.add('active'); panel.classList.add('active'); });
     document.getElementById('profile-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); await saveForm('profile', () => { content.profile = Object.fromEntries(form.entries()); }); });
-    document.getElementById('content-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); await saveForm('content', () => { content.maintenance = form.get('maintenance') === 'on'; content.services = lines(form.get('services')).map(item => item.split('|').map(part => part.trim())); content.tools = form.get('tools'); content.testimonials = lines(form.get('testimonials')).map(item => item.split('|').map(part => part.trim())); content.contact = { email: form.get('email'), socials: lines(form.get('socials')).map(item => item.split('|').map(part => part.trim())) }; }); });
+    document.getElementById('content-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); await saveForm('content', () => { content.maintenance = form.get('maintenance') === 'on'; content.metrics = { projects: Number(form.get('projects')) || 0, sessions: Number(form.get('sessions')) || 0, clients: Number(form.get('clients')) || 0 }; content.services = lines(form.get('services')).map(item => item.split('|').map(part => part.trim())); content.tools = form.get('tools'); content.testimonials = lines(form.get('testimonials')).map(item => item.split('|').map(part => part.trim())); content.contact = { email: form.get('email'), socials: lines(form.get('socials')).map(item => item.split('|').map(part => part.trim())) }; }); });
     document.getElementById('maintenance-login').addEventListener('click', () => { overlay.classList.add('open'); updateSignupAvailability(); });
     document.getElementById('skills-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); await saveForm('skills', () => { content.skills = lines(form.get('skills')); content.background = lines(form.get('background')).map(item => item.split('|').map(part => part.trim())); }); });
     document.getElementById('education-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); await saveForm('education', () => { content.education = lines(form.get('education')).map(item => item.split('|').map(part => part.trim())); content.certifications = lines(form.get('certifications')); }); });
@@ -467,6 +510,7 @@
     try { if (db) { const saved = await getDoc(doc(db, 'siteContent', 'main')); if (saved.exists()) { content = normalizeContent(saved.data()); saveLocal(); } } } catch (error) { console.warn('Could not load Firebase content:', error); }
     renderPublicDetails();
     renderPortfolio();
+    startPresence();
     const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }), { threshold: .12 });
     document.querySelectorAll('.reveal').forEach(element => observer.observe(element));
   </script>
