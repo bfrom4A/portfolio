@@ -308,6 +308,8 @@
     let content = normalizeContent(JSON.parse(localStorage.getItem(localKey) || 'null'));
     let auth = null;
     let db = null;
+    let sessionTimer = null;
+    const sessionLimit = 5 * 60 * 1000;
 
     if (hasFirebase) {
       const app = initializeApp(firebaseConfig);
@@ -330,8 +332,13 @@
       }
     });
 
-    function openAdmin() { overlay.classList.remove('open'); admin.classList.add('active'); admin.scrollIntoView({ behavior: 'smooth' }); fillForms(); renderAdminProjects(); loadInquiries(); }
-    function closeAdmin() { admin.classList.remove('active'); }
+    function openAdmin() { overlay.classList.remove('open'); admin.classList.add('active'); admin.scrollIntoView({ behavior: 'smooth' }); fillForms(); renderAdminProjects(); loadInquiries(); resetSessionTimer(); }
+    function closeAdmin() { admin.classList.remove('active'); clearTimeout(sessionTimer); }
+    function resetSessionTimer() {
+      clearTimeout(sessionTimer);
+      if (!auth?.currentUser) return;
+      sessionTimer = setTimeout(async () => { await signOut(auth); document.getElementById('login-status').textContent = 'Session expired after 5 minutes without changes. Please sign in again.'; }, sessionLimit);
+    }
     async function authorizeMaster() {
       const user = auth?.currentUser;
       if (!user || !db) throw new Error('Firebase is not configured.');
@@ -352,7 +359,9 @@
       if (db && !auth?.currentUser) throw new Error('Your master session has expired. Please sign in again.');
       if (db) await setDoc(doc(db, 'siteContent', 'main'), content);
       saveLocal();
+      renderPublicDetails();
       renderPortfolio();
+      resetSessionTimer();
     }
     function lines(value) { return value.split('\n').map(item => item.trim()).filter(Boolean); }
     function fillForms() {
@@ -416,6 +425,8 @@
     document.getElementById('signup-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const status = document.getElementById('signup-status'); let newUser = null; try { if (!auth || !db) throw new Error('Firebase is not configured.'); const account = await createUserWithEmailAndPassword(auth, form.get('email'), form.get('password')); newUser = account.user; await runTransaction(db, async transaction => { const lockRef = doc(db, 'masterControl', 'config'); const lock = await transaction.get(lockRef); if (lock.exists()) throw new Error('A master account already exists.'); transaction.set(lockRef, { uid: newUser.uid, createdAt: serverTimestamp() }); }); status.textContent = 'Master account created. You can now sign in.'; } catch (error) { if (newUser) await deleteUser(newUser).catch(() => {}); status.textContent = error.code === 'permission-denied' ? 'Firestore denied the master lock. Publish the setup rules from the instructions.' : error.message; } });
     document.querySelector('.close-login').addEventListener('click', () => overlay.classList.remove('open'));
     document.getElementById('logout-button').addEventListener('click', () => auth && signOut(auth));
+    admin.addEventListener('input', resetSessionTimer);
+    admin.addEventListener('change', resetSessionTimer);
     document.querySelector('.admin-tabs').addEventListener('click', event => { const tab = event.target.closest('.admin-tab'); if (!tab) return; event.preventDefault(); const panel = document.querySelector(`[data-panel="${tab.dataset.tab}"]`); if (!panel) return; document.querySelectorAll('.admin-tab, .admin-panel').forEach(item => item.classList.remove('active')); tab.classList.add('active'); panel.classList.add('active'); });
     document.getElementById('profile-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const previousProfile = content.profile; content.profile = Object.fromEntries(form.entries()); try { await saveContent(); showStatus('profile', 'Profile saved.'); } catch (error) { content.profile = previousProfile; showStatus('profile', error.code === 'permission-denied' ? 'Firestore rejected this save. Confirm the master account and Firestore Rules.' : error.message); } });
     document.getElementById('content-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.services = lines(form.get('services')).map(item => item.split('|').map(part => part.trim())); content.tools = form.get('tools'); content.testimonials = lines(form.get('testimonials')).map(item => item.split('|').map(part => part.trim())); content.contact = { email: form.get('email'), socials: lines(form.get('socials')).map(item => item.split('|').map(part => part.trim())) }; await saveContent(); showStatus('content', 'Saved.'); });
