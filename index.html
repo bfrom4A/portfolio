@@ -62,15 +62,16 @@
     .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid var(--line); border-radius: 999px; padding: 12px 20px; font-weight: 700; transition: .25s ease; }
     .button.primary { color: #061018; border-color: transparent; background: linear-gradient(110deg, var(--cyan), var(--purple)); }
     .button:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(99, 230, 255, .18); }
-    .hero-card { position: relative; min-height: 410px; display: grid; place-items: center; transform: translateY(-232px); }
+    .hero-card { position: relative; min-height: 410px; display: grid; place-items: center; transform: none; }
     .orb { width: min(360px, 80vw); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff 0 2%, var(--cyan) 3%, transparent 4%), radial-gradient(circle, rgba(99,230,255,.28), rgba(169,139,255,.12) 43%, transparent 67%); box-shadow: 0 0 100px rgba(99,230,255,.25); animation: planetDrift 18s ease-in-out infinite alternate; }
     .orb:after { content: ""; position: absolute; inset: 12%; border: 1px solid rgba(99,230,255,.35); border-radius: 50%; transform: rotate(25deg) scaleX(1.5); animation: planetRing 24s linear infinite reverse; }
-    .profile-photo { display: none; align-self: center; width: min(320px, 72vw); aspect-ratio: 1; object-fit: cover; border: 2px solid var(--cyan); border-radius: 50%; box-shadow: 0 0 70px rgba(99,230,255,.28); }
+    .profile-photo { display: none; align-self: center; width: min(320px, 72vw) !important; height: min(320px, 72vw) !important; aspect-ratio: 1 / 1; object-fit: cover; border: 2px solid var(--cyan); border-radius: 50%; box-shadow: 0 0 70px rgba(99,230,255,.28); }
     .profile-photo.visible { display: block; }
       .profile-avatar-video { display: none; align-self: center; width: min(320px, 72vw); aspect-ratio: 1; object-fit: cover; border: 2px solid var(--cyan); border-radius: 50%; box-shadow: 0 0 70px rgba(99,230,255,.28); }
       .profile-avatar-video.visible { display: block; }
-      .profile-tenor { display: none; width: min(320px, 72vw); aspect-ratio: 1; overflow: hidden; border: 2px solid var(--cyan); border-radius: 50%; background: #080b16; }
+      .profile-tenor { display: none; width: min(320px, 72vw) !important; height: min(320px, 72vw) !important; min-width: min(320px, 72vw); max-width: min(320px, 72vw); aspect-ratio: 1 / 1; flex: 0 0 auto; overflow: hidden; border: 2px solid var(--cyan); border-radius: 50%; clip-path: circle(50%); background: #fff; }
       .profile-tenor.visible { display: block; }
+      .profile-tenor iframe { width: 100% !important; height: 100% !important; margin: 0 !important; border: 0 !important; }
       .avatar-rotating { animation: avatarRotate 12s ease-in-out infinite; }
       .avatar-swap { animation: avatarSwap .8s ease both; }
     .status { position: absolute; right: 3%; bottom: 12%; padding: 10px 13px; border: 1px solid var(--line); border-radius: 12px; background: rgba(18,23,43,.8); box-shadow: var(--shadow); font-size: .86rem; }
@@ -197,7 +198,7 @@
         <div class="actions"><a class="button primary" href="#contact">Work with me ↗</a><a class="button" href="#work">Explore my work</a></div>
       </div>
       <div class="hero-card" aria-label="Decorative futuristic illustration">
-        <div class="orb"></div><img id="profile-photo" class="profile-photo" alt="Profile photo"><img id="profile-gif" class="profile-photo" alt="Animated profile avatar"><video id="profile-avatar-video" class="profile-avatar-video" autoplay loop muted playsinline></video><div id="profile-tenor" class="profile-tenor tenor-gif-embed" data-postid="5877185002260097302" data-share-method="host" data-aspect-ratio="1.05882" data-width="100%"><a href="https://tenor.com/view/oh-hiiii-oh-hi-hi-hello-lizard-gif-5877185002260097302">Oh Hiiii Oh Hi GIF</a></div>
+        <div class="orb"></div><img id="profile-photo" class="profile-photo" alt="Profile photo"><div id="profile-tenor" class="profile-tenor tenor-gif-embed" data-postid="17598053" data-share-method="host" data-aspect-ratio="1" data-width="130%"><a href="https://tenor.com/view/hi-hello-smile-design-golf-gif-17598053">Hi Hello Sticker</a></div>
         <div class="status"><b id="availability-label">Available</b> <span id="availability-detail">for selected projects</span></div>
       </div>
     </section>
@@ -287,7 +288,7 @@
       <div class="admin-grid">
         <nav class="admin-tabs" aria-label="Editor sections"><button class="admin-tab active" data-tab="profile">Profile</button><button class="admin-tab" data-tab="content">Page content</button><button class="admin-tab" data-tab="skills">Skills & background</button><button class="admin-tab" data-tab="education">Education</button><button class="admin-tab" data-tab="portfolio">Portfolio & sites</button><button class="admin-tab" data-tab="inquiries">Inquiries</button></nav>
         <div>
-          <div class="admin-panel active" data-panel="profile"><div class="card"><h3>Profile details</h3><form id="profile-form" class="admin-form"><div class="admin-row"><label>Display name<input name="name" required></label><label>Profile image URL<input name="photo" type="url" placeholder="https://example.com/profile.jpg"></label></div><label>Animated avatar URL <small>Paste any public GIF, WebP, MP4, or WebM link. GitHub is not required.</small><input name="avatarMedia" type="url" placeholder="https://example.com/avatar.gif"></label><label class="toggle-label"><input name="avatarMotion" type="checkbox"> Add gentle rotating motion</label><div class="admin-row"><label>Status label<input name="statusLabel" required></label><label>Status detail<input name="statusDetail" required></label></div><label>Headline<input name="headline" required></label><label>Bio<textarea name="bio" required></textarea></label><label>Location<input name="location"></label><button class="button primary" type="submit">Save profile</button><small class="form-status muted" data-status="profile"></small></form></div></div>
+          <div class="admin-panel active" data-panel="profile"><div class="card"><h3>Profile details</h3><form id="profile-form" class="admin-form"><div class="admin-row"><label>Display name<input name="name" required></label><label>Profile image URL<input name="photo" type="url" placeholder="https://example.com/profile.jpg"></label></div><label class="toggle-label"><input name="avatarMotion" type="checkbox"> Add gentle rotating motion</label><div class="admin-row"><label>Status label<input name="statusLabel" required></label><label>Status detail<input name="statusDetail" required></label></div><label>Headline<input name="headline" required></label><label>Bio<textarea name="bio" required></textarea></label><label>Location<input name="location"></label><button class="button primary" type="submit">Save profile</button><small class="form-status muted" data-status="profile"></small></form></div></div>
           <div class="admin-panel" data-panel="content"><div class="card"><h3>Page content</h3><form id="content-form" class="admin-form"><label>Maintenance mode<select name="maintenanceMode"><option value="off">Off</option><option value="scheduled">Scheduled</option><option value="emergency">Emergency now</option></select></label><label>Estimated return time <input name="maintenanceEnd" type="datetime-local"><small>Required for a countdown. Emergency mode can remain on without an end time.</small></label><label>Maintenance message<textarea name="maintenanceMessage"></textarea></label><div class="admin-row"><label>Projects made<input name="projects" type="number" min="0"></label><label>Code sessions done<input name="sessions" type="number" min="0"></label></div><label>Clients<input name="clients" type="number" min="0"></label><label>Services <small>One item per line: title | description</small><textarea name="services"></textarea></label><label>Favorite tools<input name="tools"></label><label>Testimonials <small>One item per line: quote | author</small><textarea name="testimonials"></textarea></label><div class="admin-row"><label>Contact email<input name="email" type="email"></label><label>Social links <small>One item per line: label | URL</small><textarea name="socials"></textarea></label></div><button class="button primary" type="submit">Save page content</button><small class="form-status muted" data-status="content"></small></form></div></div>
           <div class="admin-panel" data-panel="skills"><div class="card"><h3>Skills and background</h3><form id="skills-form" class="admin-form"><label>Skills <small>One skill per line</small><textarea name="skills" placeholder="Project coordination&#10;Research"></textarea></label><label>Background / experience <small>One role per line, using: year | role | description</small><textarea name="background" placeholder="2023 - Now | Independent VA | Supporting founders..."></textarea></label><button class="button primary" type="submit">Save background</button><small class="form-status muted" data-status="skills"></small></form></div></div>
           <div class="admin-panel" data-panel="education"><div class="card"><h3>Education and credentials</h3><form id="education-form" class="admin-form"><label>Education <small>One item per line, using: year | school | qualification</small><textarea name="education" placeholder="2020 | University | Business Administration"></textarea></label><label>Certifications <small>One item per line</small><textarea name="certifications"></textarea></label><button class="button primary" type="submit">Save education</button><small class="form-status muted" data-status="education"></small></form></div></div>
@@ -485,19 +486,15 @@
     }
     function triggerAvatarCycle() {
       const staticUrl = mediaUrl(content.profile.photo);
-      const animatedUrl = content.profile.avatarMedia || '';
       if (!staticUrl || avatarCycleRunning || Date.now() < avatarCycleAvailableAt) return;
       const photo = document.getElementById('profile-photo');
-      const animated = animatedUrl ? (/(mp4|webm|ogg)(\?.*)?$/i.test(animatedUrl) ? document.getElementById('profile-avatar-video') : document.getElementById('profile-gif')) : document.getElementById('profile-tenor');
-      const isVideo = animated.tagName === 'VIDEO';
+      const animated = document.getElementById('profile-tenor');
       avatarCycleRunning = true;
       avatarCycleAvailableAt = Date.now() + 60000;
       photo.classList.remove('avatar-rotating');
       photo.classList.add('avatar-swap');
       setTimeout(() => {
         photo.classList.remove('visible', 'avatar-swap');
-        if (!isVideo && animatedUrl) animated.src = `${animatedUrl}${animatedUrl.includes('?') ? '&' : '?'}cycle=${Date.now()}`;
-        else { animated.src = animatedUrl; animated.currentTime = 0; animated.play().catch(() => {}); }
         animated.classList.add('visible', 'avatar-swap');
         setTimeout(() => {
           animated.classList.remove('visible', 'avatar-swap');
@@ -509,26 +506,15 @@
     function renderPublicDetails() {
       const profilePhoto = document.getElementById('profile-photo');
       renderMaintenance();
-      const profileGif = document.getElementById('profile-gif');
-      const profileVideo = document.getElementById('profile-avatar-video');
       const profileTenor = document.getElementById('profile-tenor');
       const staticUrl = mediaUrl(content.profile.photo);
-      const animatedUrl = mediaUrl(content.profile.avatarMedia);
-      const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(animatedUrl);
-      [profilePhoto, profileGif, profileVideo, profileTenor].forEach(element => { element.classList.remove('visible', 'avatar-rotating', 'avatar-swap'); });
+      [profilePhoto, profileTenor].forEach(element => { element.classList.remove('visible', 'avatar-rotating', 'avatar-swap'); });
       profilePhoto.onerror = () => { profilePhoto.removeAttribute('src'); document.querySelector('.orb').style.display = 'block'; };
-      profileGif.onerror = () => { profileGif.removeAttribute('src'); document.querySelector('.orb').style.display = 'block'; };
-      profileVideo.onerror = () => { profileVideo.removeAttribute('src'); document.querySelector('.orb').style.display = 'block'; };
       if (staticUrl) profilePhoto.src = staticUrl; else profilePhoto.removeAttribute('src');
-      profileGif.removeAttribute('src');
-      profileVideo.removeAttribute('src');
       if (staticUrl) profilePhoto.classList.add('visible');
-      if (animatedUrl && !staticUrl) {
-        if (isVideo) { profileVideo.src = animatedUrl; profileVideo.classList.add('visible'); }
-        else { profileGif.src = animatedUrl; profileGif.classList.add('visible'); }
-      }
-      [profilePhoto, profileGif, profileVideo, profileTenor].forEach(element => element.classList.toggle('avatar-rotating', Boolean(content.profile.avatarMotion)));
-      document.querySelector('.orb').style.display = staticUrl || animatedUrl ? 'none' : 'block';
+      profileTenor.classList.toggle('avatar-rotating', Boolean(content.profile.avatarMotion));
+      profilePhoto.classList.toggle('avatar-rotating', Boolean(content.profile.avatarMotion));
+      document.querySelector('.orb').style.display = staticUrl ? 'none' : 'block';
       document.querySelector('.hero h1').innerHTML = `${content.profile.headline.split('. ')[0]}.<br><em>${content.profile.headline.split('. ').slice(1).join('. ')}</em>`;
       document.querySelector('.hero .lead').textContent = content.profile.bio;
       document.getElementById('availability-label').textContent = content.profile.statusLabel || 'Available';
