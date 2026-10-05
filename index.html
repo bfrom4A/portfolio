@@ -290,7 +290,20 @@
       ]
     };
     function normalizeContent(raw) {
-      return { ...defaultContent, ...raw, profile: { ...defaultContent.profile, ...(raw?.profile || {}) }, contact: { ...defaultContent.contact, ...(raw?.contact || {}) } };
+      const saved = raw || {};
+      return {
+        ...defaultContent,
+        ...saved,
+        profile: { ...defaultContent.profile, ...(saved.profile || {}) },
+        contact: { ...defaultContent.contact, ...(saved.contact || {}), socials: saved.contact?.socials || defaultContent.contact.socials },
+        services: saved.services || defaultContent.services,
+        testimonials: saved.testimonials || defaultContent.testimonials,
+        skills: saved.skills || defaultContent.skills,
+        background: saved.background || defaultContent.background,
+        education: saved.education || defaultContent.education,
+        certifications: saved.certifications || defaultContent.certifications,
+        portfolio: saved.portfolio || defaultContent.portfolio
+      };
     }
     let content = normalizeContent(JSON.parse(localStorage.getItem(localKey) || 'null'));
     let auth = null;
@@ -403,7 +416,7 @@
     document.getElementById('signup-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const status = document.getElementById('signup-status'); let newUser = null; try { if (!auth || !db) throw new Error('Firebase is not configured.'); const account = await createUserWithEmailAndPassword(auth, form.get('email'), form.get('password')); newUser = account.user; await runTransaction(db, async transaction => { const lockRef = doc(db, 'masterControl', 'config'); const lock = await transaction.get(lockRef); if (lock.exists()) throw new Error('A master account already exists.'); transaction.set(lockRef, { uid: newUser.uid, createdAt: serverTimestamp() }); }); status.textContent = 'Master account created. You can now sign in.'; } catch (error) { if (newUser) await deleteUser(newUser).catch(() => {}); status.textContent = error.code === 'permission-denied' ? 'Firestore denied the master lock. Publish the setup rules from the instructions.' : error.message; } });
     document.querySelector('.close-login').addEventListener('click', () => overlay.classList.remove('open'));
     document.getElementById('logout-button').addEventListener('click', () => auth && signOut(auth));
-    document.querySelectorAll('.admin-tab').forEach(tab => tab.addEventListener('click', () => { document.querySelectorAll('.admin-tab, .admin-panel').forEach(item => item.classList.remove('active')); tab.classList.add('active'); document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active'); }));
+    document.querySelector('.admin-tabs').addEventListener('click', event => { const tab = event.target.closest('.admin-tab'); if (!tab) return; event.preventDefault(); const panel = document.querySelector(`[data-panel="${tab.dataset.tab}"]`); if (!panel) return; document.querySelectorAll('.admin-tab, .admin-panel').forEach(item => item.classList.remove('active')); tab.classList.add('active'); panel.classList.add('active'); });
     document.getElementById('profile-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const previousProfile = content.profile; content.profile = Object.fromEntries(form.entries()); try { await saveContent(); showStatus('profile', 'Profile saved.'); } catch (error) { content.profile = previousProfile; showStatus('profile', error.code === 'permission-denied' ? 'Firestore rejected this save. Confirm the master account and Firestore Rules.' : error.message); } });
     document.getElementById('content-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.services = lines(form.get('services')).map(item => item.split('|').map(part => part.trim())); content.tools = form.get('tools'); content.testimonials = lines(form.get('testimonials')).map(item => item.split('|').map(part => part.trim())); content.contact = { email: form.get('email'), socials: lines(form.get('socials')).map(item => item.split('|').map(part => part.trim())) }; await saveContent(); showStatus('content', 'Saved.'); });
     document.getElementById('skills-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.skills = lines(form.get('skills')); content.background = lines(form.get('background')).map(item => item.split('|').map(part => part.trim())); await saveContent(); showStatus('skills', 'Saved.'); });
