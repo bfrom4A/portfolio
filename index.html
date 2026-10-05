@@ -300,16 +300,17 @@
     };
     function normalizeContent(raw) {
       const saved = raw || {};
+      const rowValues = (value, fallback, fields) => (value || fallback).map(item => Array.isArray(item) ? item : fields.map(field => item[field] || ''));
       return {
         ...defaultContent,
         ...saved,
         profile: { ...defaultContent.profile, ...(saved.profile || {}) },
-        contact: { ...defaultContent.contact, ...(saved.contact || {}), socials: saved.contact?.socials || defaultContent.contact.socials },
-        services: saved.services || defaultContent.services,
-        testimonials: saved.testimonials || defaultContent.testimonials,
+        contact: { ...defaultContent.contact, ...(saved.contact || {}), socials: rowValues(saved.contact?.socials, defaultContent.contact.socials, ['label', 'url']) },
+        services: rowValues(saved.services, defaultContent.services, ['title', 'description']),
+        testimonials: rowValues(saved.testimonials, defaultContent.testimonials, ['quote', 'author']),
         skills: saved.skills || defaultContent.skills,
-        background: saved.background || defaultContent.background,
-        education: saved.education || defaultContent.education,
+        background: rowValues(saved.background, defaultContent.background, ['period', 'role', 'description']),
+        education: rowValues(saved.education, defaultContent.education, ['year', 'school', 'qualification']),
         certifications: saved.certifications || defaultContent.certifications,
         portfolio: saved.portfolio || defaultContent.portfolio
       };
@@ -366,7 +367,15 @@
     }
     async function saveContent() {
       if (db && !auth?.currentUser) throw new Error('Your master session has expired. Please sign in again.');
-      if (db) await setDoc(doc(db, 'siteContent', 'main'), content);
+      const firestoreContent = {
+        ...content,
+        services: content.services.map(item => ({ title: item[0] || '', description: item[1] || '' })),
+        testimonials: content.testimonials.map(item => ({ quote: item[0] || '', author: item[1] || '' })),
+        background: content.background.map(item => ({ period: item[0] || '', role: item[1] || '', description: item.slice(2).join(' · ') })),
+        education: content.education.map(item => ({ year: item[0] || '', school: item[1] || '', qualification: item.slice(2).join(' · ') })),
+        contact: { ...content.contact, socials: content.contact.socials.map(item => ({ label: item[0] || '', url: item[1] || '' })) }
+      };
+      if (db) await setDoc(doc(db, 'siteContent', 'main'), firestoreContent);
       saveLocal();
       renderPublicDetails();
       renderPortfolio();
