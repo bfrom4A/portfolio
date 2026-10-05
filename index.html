@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A futuristic virtual assistant portfolio.">
-  <title>Alex Morgan | Virtual Assistant Portfolio</title>
+  <title>Jc Balog Portfolio</title>
   <style>
     :root {
       --bg: #080b16;
@@ -93,6 +93,10 @@
     .socials { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
     .socials a { padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
     .socials a:hover { color: var(--cyan); border-color: var(--cyan); }
+    .contact-links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 22px; }
+    .contact-links a { display: inline-flex; align-items: center; gap: 8px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
+    .contact-links a:hover { color: var(--cyan); border-color: var(--cyan); }
+    .contact-icon { display: inline-grid; width: 20px; height: 20px; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-size: .75rem; font-weight: 800; }
     .admin-link { color: var(--cyan) !important; }
     .admin-shell { display: none; min-height: 100vh; padding: 45px 0 80px; background: #0b1020; }
     .admin-shell.active { display: block; }
@@ -118,6 +122,10 @@
     .login-card { width: min(430px, 100%); }
     .close-login { float: right; cursor: pointer; color: var(--muted); border: 0; background: none; font-size: 1.2rem; }
     .form-status { min-height: 1.4em; }
+    .signup-form { display: none; }
+    .signup-form.open { display: grid; }
+    .text-button { cursor: pointer; color: var(--cyan); border: 0; padding: 0; background: none; font: inherit; }
+    .github-button { width: 100%; cursor: pointer; font: inherit; }
     .reveal { opacity: 0; transform: translateY(22px); transition: .7s ease; }
     .reveal.visible { opacity: 1; transform: none; }
     @keyframes float { 50% { transform: translateY(-13px) rotate(4deg); } }
@@ -138,7 +146,7 @@
 <body>
   <nav class="nav">
     <div class="container nav-inner">
-      <a class="brand" href="#top">AM<span>.</span></a>
+      <a class="brand" href="#top">Jc Balog <span>Portfolio</span></a>
       <button class="menu" aria-label="Toggle navigation">Menu</button>
       <div class="nav-links">
         <a href="#about">About</a><a href="#services">Services</a><a href="#work">Work</a><a href="#experience">Experience</a><a href="#contact">Contact</a><a class="admin-link" href="#admin">Master login</a>
@@ -178,9 +186,9 @@
       <div class="container reveal">
         <div class="section-head"><div><div class="eyebrow">02 / VA services</div><h2>Support that scales with you.</h2></div><p class="section-intro">Flexible support for the tasks, projects, and systems that keep your business moving.</p></div>
         <div class="grid three">
-          <article class="card"><div class="service-icon">✦</div><h3>Executive support</h3><p class="muted">Calendar management, inbox organization, travel research, meeting notes, and day-to-day admin.</p></article>
-          <article class="card"><div class="service-icon">⌁</div><h3>Content & social</h3><p class="muted">Content scheduling, community support, simple graphics, repurposing, and consistent brand presence.</p></article>
-          <article class="card"><div class="service-icon">◈</div><h3>Operations</h3><p class="muted">SOPs, project coordination, CRM upkeep, research, data entry, and workflow improvements.</p></article>
+          <article class="card service-card"><div class="service-icon">✦</div><h3>Executive support</h3><p class="muted">Calendar management, inbox organization, travel research, meeting notes, and day-to-day admin.</p></article>
+          <article class="card service-card"><div class="service-icon">⌁</div><h3>Content & social</h3><p class="muted">Content scheduling, community support, simple graphics, repurposing, and consistent brand presence.</p></article>
+          <article class="card service-card"><div class="service-icon">◈</div><h3>Operations</h3><p class="muted">SOPs, project coordination, CRM upkeep, research, data entry, and workflow improvements.</p></article>
         </div>
       </div>
     </section>
@@ -190,7 +198,7 @@
         <div class="section-head"><div><div class="eyebrow">03 / Skills & tools</div><h2>Built for the modern workspace.</h2></div></div>
         <div class="grid two">
           <div class="card"><h3>Core skills</h3><div id="skills-tags" class="tags"><span class="tag">Project coordination</span><span class="tag">Inbox management</span><span class="tag">Research</span><span class="tag">Copy editing</span><span class="tag">Customer support</span><span class="tag">Process documentation</span><span class="tag">Social scheduling</span><span class="tag">Data organization</span></div></div>
-          <div class="card"><h3>Favorite tools</h3><p class="muted">Notion · Asana · ClickUp · Google Workspace · Slack · Canva · Trello · Airtable · Calendly · Loom</p><div class="tags"><span class="tag">Fast learner</span><span class="tag">Tool agnostic</span><span class="tag">AI curious</span></div></div>
+          <div class="card"><h3>Favorite tools</h3><p id="tools-text" class="muted">Notion · Asana · ClickUp · Google Workspace · Slack · Canva · Trello · Airtable · Calendly · Loom</p><div class="tags"><span class="tag">Fast learner</span><span class="tag">Tool agnostic</span><span class="tag">AI curious</span></div></div>
         </div>
       </div>
     </section>
@@ -222,7 +230,7 @@
     </section>
 
     <section id="testimonials">
-      <div class="container reveal"><div class="eyebrow">06 / Kind words</div><h2>Trusted to make things lighter.</h2><div class="grid three" style="margin-top:34px"><blockquote class="card">Alex brought order to a project that felt impossible. I finally had space to focus on the creative work.<footer>— Jamie R., Creative Founder</footer></blockquote><blockquote class="card">Proactive, thoughtful, and incredibly dependable. Alex feels like a true extension of our team.<footer>— Morgan T., Agency Director</footer></blockquote><blockquote class="card">The systems Alex created still save us hours every week. An absolute joy to work with.<footer>— Taylor K., Coach</footer></blockquote></div></div>
+      <div class="container reveal"><div class="eyebrow">06 / Kind words</div><h2>Trusted to make things lighter.</h2><div id="testimonials-grid" class="grid three" style="margin-top:34px"><blockquote class="card">Alex brought order to a project that felt impossible. I finally had space to focus on the creative work.<footer>— Jamie R., Creative Founder</footer></blockquote><blockquote class="card">Proactive, thoughtful, and incredibly dependable. Alex feels like a true extension of our team.<footer>— Morgan T., Agency Director</footer></blockquote><blockquote class="card">The systems Alex created still save us hours every week. An absolute joy to work with.<footer>— Taylor K., Coach</footer></blockquote></div></div>
     </section>
 
     <section id="contact">
@@ -237,9 +245,10 @@
       <div class="admin-top"><div><div class="eyebrow">Private workspace</div><h2>Portfolio control room.</h2></div><button id="logout-button" class="button">Log out</button></div>
       <p class="admin-note">Firebase stores your text data, links, login, and inquiries. Keep photos and other media in GitHub, then paste their raw or public URL here. Create the master account in Firebase Authentication first; this page never stores a master password in the browser.</p>
       <div class="admin-grid">
-        <nav class="admin-tabs" aria-label="Editor sections"><button class="admin-tab active" data-tab="profile">Profile</button><button class="admin-tab" data-tab="skills">Skills & background</button><button class="admin-tab" data-tab="education">Education</button><button class="admin-tab" data-tab="portfolio">Portfolio & sites</button><button class="admin-tab" data-tab="inquiries">Inquiries</button></nav>
+        <nav class="admin-tabs" aria-label="Editor sections"><button class="admin-tab active" data-tab="profile">Profile</button><button class="admin-tab" data-tab="content">Page content</button><button class="admin-tab" data-tab="skills">Skills & background</button><button class="admin-tab" data-tab="education">Education</button><button class="admin-tab" data-tab="portfolio">Portfolio & sites</button><button class="admin-tab" data-tab="inquiries">Inquiries</button></nav>
         <div>
           <div class="admin-panel active" data-panel="profile"><div class="card"><h3>Profile details</h3><form id="profile-form" class="admin-form"><div class="admin-row"><label>Display name<input name="name" required></label><label>GitHub image URL<input name="photo" type="url" placeholder="https://raw.githubusercontent.com/..."></label></div><label>Headline<input name="headline" required></label><label>Bio<textarea name="bio" required></textarea></label><label>Location<input name="location"></label><button class="button primary" type="submit">Save profile</button><small class="form-status muted" data-status="profile"></small></form></div></div>
+          <div class="admin-panel" data-panel="content"><div class="card"><h3>Page content</h3><form id="content-form" class="admin-form"><label>Services <small>One item per line: title | description</small><textarea name="services"></textarea></label><label>Favorite tools<input name="tools"></label><label>Testimonials <small>One item per line: quote | author</small><textarea name="testimonials"></textarea></label><div class="admin-row"><label>Contact email<input name="email" type="email"></label><label>Social links <small>One item per line: label | URL</small><textarea name="socials"></textarea></label></div><button class="button primary" type="submit">Save page content</button><small class="form-status muted" data-status="content"></small></form></div></div>
           <div class="admin-panel" data-panel="skills"><div class="card"><h3>Skills and background</h3><form id="skills-form" class="admin-form"><label>Skills <small>One skill per line</small><textarea name="skills" placeholder="Project coordination&#10;Research"></textarea></label><label>Background / experience <small>One role per line, using: year | role | description</small><textarea name="background" placeholder="2023 - Now | Independent VA | Supporting founders..."></textarea></label><button class="button primary" type="submit">Save background</button><small class="form-status muted" data-status="skills"></small></form></div></div>
           <div class="admin-panel" data-panel="education"><div class="card"><h3>Education and credentials</h3><form id="education-form" class="admin-form"><label>Education <small>One item per line, using: year | school | qualification</small><textarea name="education" placeholder="2020 | University | Business Administration"></textarea></label><label>Certifications <small>One item per line</small><textarea name="certifications"></textarea></label><button class="button primary" type="submit">Save education</button><small class="form-status muted" data-status="education"></small></form></div></div>
           <div class="admin-panel" data-panel="portfolio"><div class="card"><h3>Add a portfolio project or live website</h3><form id="portfolio-form" class="admin-form"><label>Project title<input name="title" required></label><div class="admin-row"><label>Website URL<input name="url" type="url" placeholder="https://example.com" required></label><label>Cover image URL<input name="image" type="url" placeholder="https://..."></label></div><label>Description<textarea name="description"></textarea></label><button class="button primary" type="submit">Add project</button><small class="form-status muted" data-status="portfolio"></small></form><div id="admin-projects" class="admin-list" style="margin-top:22px"></div></div></div>
@@ -248,12 +257,12 @@
       </div>
     </div>
   </section>
-  <div id="login-overlay" class="login-overlay"><div class="card login-card"><button class="close-login" type="button" aria-label="Close login">×</button><div class="eyebrow">Restricted access</div><h3>Master login</h3><form id="login-form" class="admin-form"><label>Email<input name="email" type="email" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="button primary" type="submit">Sign in</button><small id="login-status" class="form-status muted" aria-live="polite"></small></form></div></div>
-  <footer><div class="container">© 2025 Alex Morgan <span style="float:right">Designed with intention ✦</span></div></footer>
+  <div id="login-overlay" class="login-overlay"><div class="card login-card"><button class="close-login" type="button" aria-label="Close login">×</button><div class="eyebrow">Restricted access</div><h3>Master login</h3><form id="login-form" class="admin-form"><label>Email<input name="email" type="email" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="button primary" type="submit">Sign in</button><small id="login-status" class="form-status muted" aria-live="polite"></small></form><button id="github-login" class="button github-button" type="button">Sign in with GitHub</button><button id="show-signup" class="text-button" type="button" style="margin-top:16px">Create the first master account</button><form id="signup-form" class="admin-form signup-form"><label>Master email<input name="email" type="email" autocomplete="email" required></label><label>Create password<input name="password" type="password" minlength="6" autocomplete="new-password" required></label><button class="button primary" type="submit">Create master account</button><small id="signup-status" class="form-status muted" aria-live="polite"></small></form></div></div>
+  <footer><div class="container">© 2025 Jc Balog</div></footer>
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
-    import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
-    import { getFirestore, doc, getDoc, setDoc, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+    import { getAuth, GithubAuthProvider, onAuthStateChanged, signInWithPopup, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, deleteUser } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+    import { getFirestore, doc, getDoc, setDoc, runTransaction, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 
     // Replace these values with the Web app config from Firebase Console.
     const firebaseConfig = {
@@ -268,6 +277,10 @@
     const localKey = 'alex-portfolio-content';
     const defaultContent = {
       profile: { name: 'Alex Morgan', photo: '', headline: 'Calm systems. Bold results.', bio: 'Hi, I’m Alex — a detail-driven virtual assistant helping founders and growing teams turn busywork into clear, reliable momentum.', location: 'Based remotely · Working across time zones' },
+      services: [['Executive support', 'Calendar management, inbox organization, travel research, meeting notes, and day-to-day admin.'], ['Content & social', 'Content scheduling, community support, simple graphics, repurposing, and consistent brand presence.'], ['Operations', 'SOPs, project coordination, CRM upkeep, research, data entry, and workflow improvements.']],
+      tools: 'Notion · Asana · ClickUp · Google Workspace · Slack · Canva · Trello · Airtable · Calendly · Loom',
+      testimonials: [['Alex brought order to a project that felt impossible. I finally had space to focus on the creative work.', 'Jamie R., Creative Founder'], ['Proactive, thoughtful, and incredibly dependable. Alex feels like a true extension of our team.', 'Morgan T., Agency Director'], ['The systems Alex created still save us hours every week. An absolute joy to work with.', 'Taylor K., Coach']],
+      contact: { email: 'hello@alexmorgan.co', socials: [['Facebook', '#'], ['TikTok', '#'], ['WhatsApp', '#']] },
       skills: ['Project coordination', 'Inbox management', 'Research', 'Copy editing', 'Customer support', 'Process documentation'],
       background: [], education: [], certifications: [],
       portfolio: [
@@ -276,7 +289,10 @@
         { title: 'Inbox reset', url: 'https://gmail.com', description: 'A calm, searchable system with labels and filters.', image: '' }
       ]
     };
-    let content = JSON.parse(localStorage.getItem(localKey) || 'null') || defaultContent;
+    function normalizeContent(raw) {
+      return { ...defaultContent, ...raw, profile: { ...defaultContent.profile, ...(raw?.profile || {}) }, contact: { ...defaultContent.contact, ...(raw?.contact || {}) } };
+    }
+    let content = normalizeContent(JSON.parse(localStorage.getItem(localKey) || 'null'));
     let auth = null;
     let db = null;
 
@@ -284,7 +300,7 @@
       const app = initializeApp(firebaseConfig);
       auth = getAuth(app);
       db = getFirestore(app);
-      onAuthStateChanged(auth, user => { if (user) openAdmin(); else closeAdmin(); });
+      onAuthStateChanged(auth, user => { if (!user) closeAdmin(); });
     }
 
     const menu = document.querySelector('.menu');
@@ -296,14 +312,26 @@
       if (event.target.matches('a')) links.classList.remove('open');
       if (event.target.matches('.admin-link')) {
         event.preventDefault();
-        if (auth) overlay.classList.add('open');
+        if (auth) { overlay.classList.add('open'); updateSignupAvailability(); }
         else { document.getElementById('login-status').textContent = 'Add your Firebase config in the script before signing in.'; overlay.classList.add('open'); }
       }
     });
 
     function openAdmin() { overlay.classList.remove('open'); admin.classList.add('active'); admin.scrollIntoView({ behavior: 'smooth' }); fillForms(); renderAdminProjects(); loadInquiries(); }
     function closeAdmin() { admin.classList.remove('active'); }
+    async function authorizeMaster() {
+      const user = auth?.currentUser;
+      if (!user || !db) throw new Error('Firebase is not configured.');
+      const lock = await getDoc(doc(db, 'masterControl', 'config'));
+      if (!lock.exists() || lock.data().uid !== user.uid) { await signOut(auth); throw new Error('This account is not the master account.'); }
+      openAdmin();
+    }
     function saveLocal() { localStorage.setItem(localKey, JSON.stringify(content)); }
+    async function updateSignupAvailability() {
+      const signupButton = document.getElementById('show-signup');
+      if (!db) { signupButton.disabled = true; signupButton.textContent = 'Configure Firebase first'; return; }
+      try { const lock = await getDoc(doc(db, 'masterControl', 'config')); if (lock.exists()) { signupButton.disabled = true; signupButton.textContent = 'Master account already created'; } } catch (error) { signupButton.textContent = 'Set Firestore rules to enable first setup'; }
+    }
     async function saveContent() {
       saveLocal();
       if (db && auth?.currentUser) await setDoc(doc(db, 'siteContent', 'main'), content);
@@ -317,6 +345,11 @@
       document.querySelector('#skills-form [name="background"]').value = content.background.map(item => item.join(' | ')).join('\n');
       document.querySelector('#education-form [name="education"]').value = content.education.map(item => item.join(' | ')).join('\n');
       document.querySelector('#education-form [name="certifications"]').value = content.certifications.join('\n');
+      document.querySelector('#content-form [name="services"]').value = content.services.map(item => item.join(' | ')).join('\n');
+      document.querySelector('#content-form [name="tools"]').value = content.tools;
+      document.querySelector('#content-form [name="testimonials"]').value = content.testimonials.map(item => item.join(' | ')).join('\n');
+      document.querySelector('#content-form [name="email"]').value = content.contact.email;
+      document.querySelector('#content-form [name="socials"]').value = content.contact.socials.map(item => item.join(' | ')).join('\n');
     }
     function showStatus(name, message) { document.querySelector(`[data-status="${name}"]`).textContent = message; }
     function renderPublicDetails() {
@@ -333,6 +366,13 @@
       const education = content.education.map(item => `<p class="muted"><strong>${item[0] || ''}</strong> · ${item.slice(1).join(' · ')}</p>`).join('') || '<p class="muted">Add education from the editor.</p>';
       const certifications = content.certifications.map(item => `<p class="muted">${item}</p>`).join('') || '<p class="muted">Add certifications from the editor.</p>';
       document.getElementById('education-content').innerHTML = `<div class="card"><h3>Education</h3>${education}</div><div class="card"><h3>Certifications</h3>${certifications}</div>`;
+      document.querySelectorAll('.service-card').forEach((card, index) => { const service = content.services[index]; if (service) { card.querySelector('h3').textContent = service[0]; card.querySelector('p').textContent = service[1]; } });
+      document.getElementById('tools-text').textContent = content.tools;
+      document.getElementById('testimonials-grid').innerHTML = content.testimonials.map(item => `<blockquote class="card">${item[0]}<footer>— ${item[1]}</footer></blockquote>`).join('');
+      document.querySelector('.contact-list a').textContent = content.contact.email;
+      document.querySelector('.contact-list a').href = `mailto:${content.contact.email}`;
+      const contactIcons = { Email: '@', Facebook: 'f', TikTok: '♪', WhatsApp: '◉' };
+      document.querySelector('.socials').innerHTML = [['Email', `mailto:${content.contact.email}`], ...content.contact.socials].map(item => `<a href="${item[1]}" target="_blank" rel="noreferrer" aria-label="Contact via ${item[0]}"><span class="contact-icon">${contactIcons[item[0]] || item[0].charAt(0).toUpperCase()}</span>${item[0]}</a>`).join('');
     }
     function renderPortfolio() {
       document.getElementById('portfolio-grid').innerHTML = content.portfolio.map(project => `<article class="card project"><div class="project-cover" style="${project.image ? `background-image:url('${project.image}')` : ''}"><strong>${project.title}</strong></div><div class="project-body"><p class="muted">${project.description || ''}</p><div class="tags"><a class="tag" href="${project.url}" target="_blank" rel="noreferrer">Open site ↗</a></div><iframe class="preview-frame" src="${project.url}" title="Live preview of ${project.title}" loading="lazy"></iframe></div></article>`).join('');
@@ -346,17 +386,21 @@
       onSnapshot(query(collection(db, 'inquiries'), orderBy('createdAt', 'desc')), snapshot => { document.getElementById('inquiry-list').innerHTML = snapshot.docs.map(item => { const inquiry = item.data(); return `<div class="admin-item"><strong>${inquiry.name} · ${inquiry.email}</strong><span>${inquiry.message}</span></div>`; }).join('') || '<p class="muted">No inquiries yet.</p>'; });
     }
 
-    document.getElementById('login-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const status = document.getElementById('login-status'); try { if (!auth) throw new Error('Firebase is not configured.'); await signInWithEmailAndPassword(auth, form.get('email'), form.get('password')); status.textContent = ''; } catch (error) { status.textContent = error.message; } });
+    document.getElementById('login-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const status = document.getElementById('login-status'); try { if (!auth) throw new Error('Firebase is not configured.'); await signInWithEmailAndPassword(auth, form.get('email'), form.get('password')); await authorizeMaster(); status.textContent = ''; } catch (error) { status.textContent = error.message; } });
+    document.getElementById('github-login').addEventListener('click', async () => { const status = document.getElementById('login-status'); try { if (!auth) throw new Error('Firebase is not configured.'); await signInWithPopup(auth, new GithubAuthProvider()); await authorizeMaster(); status.textContent = ''; } catch (error) { status.textContent = error.message; } });
+    document.getElementById('show-signup').addEventListener('click', event => { event.currentTarget.style.display = 'none'; document.getElementById('signup-form').classList.add('open'); });
+    document.getElementById('signup-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const status = document.getElementById('signup-status'); let newUser = null; try { if (!auth || !db) throw new Error('Firebase is not configured.'); const account = await createUserWithEmailAndPassword(auth, form.get('email'), form.get('password')); newUser = account.user; await runTransaction(db, async transaction => { const lockRef = doc(db, 'masterControl', 'config'); const lock = await transaction.get(lockRef); if (lock.exists()) throw new Error('A master account already exists.'); transaction.set(lockRef, { uid: newUser.uid, createdAt: serverTimestamp() }); }); status.textContent = 'Master account created.'; } catch (error) { if (newUser) await deleteUser(newUser).catch(() => {}); status.textContent = error.message; } });
     document.querySelector('.close-login').addEventListener('click', () => overlay.classList.remove('open'));
     document.getElementById('logout-button').addEventListener('click', () => auth && signOut(auth));
     document.querySelectorAll('.admin-tab').forEach(tab => tab.addEventListener('click', () => { document.querySelectorAll('.admin-tab, .admin-panel').forEach(item => item.classList.remove('active')); tab.classList.add('active'); document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active'); }));
     document.getElementById('profile-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.profile = Object.fromEntries(form.entries()); await saveContent(); showStatus('profile', 'Saved.'); });
+    document.getElementById('content-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.services = lines(form.get('services')).map(item => item.split('|').map(part => part.trim())); content.tools = form.get('tools'); content.testimonials = lines(form.get('testimonials')).map(item => item.split('|').map(part => part.trim())); content.contact = { email: form.get('email'), socials: lines(form.get('socials')).map(item => item.split('|').map(part => part.trim())) }; await saveContent(); showStatus('content', 'Saved.'); });
     document.getElementById('skills-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.skills = lines(form.get('skills')); content.background = lines(form.get('background')).map(item => item.split('|').map(part => part.trim())); await saveContent(); showStatus('skills', 'Saved.'); });
     document.getElementById('education-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.education = lines(form.get('education')).map(item => item.split('|').map(part => part.trim())); content.certifications = lines(form.get('certifications')); await saveContent(); showStatus('education', 'Saved.'); });
     document.getElementById('portfolio-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.portfolio.push(Object.fromEntries(form.entries())); await saveContent(); renderAdminProjects(); event.currentTarget.reset(); showStatus('portfolio', 'Project added.'); });
     document.querySelector('form[onsubmit]').addEventListener('submit', async event => { if (db) { const form = new FormData(event.currentTarget); await addDoc(collection(db, 'inquiries'), { name: form.get('name'), email: form.get('email'), message: form.get('message'), createdAt: serverTimestamp() }); } });
 
-    try { if (db) { const saved = await getDoc(doc(db, 'siteContent', 'main')); if (saved.exists()) { content = saved.data(); saveLocal(); } } } catch (error) { console.warn('Could not load Firebase content:', error); }
+    try { if (db) { const saved = await getDoc(doc(db, 'siteContent', 'main')); if (saved.exists()) { content = normalizeContent(saved.data()); saveLocal(); } } } catch (error) { console.warn('Could not load Firebase content:', error); }
     renderPublicDetails();
     renderPortfolio();
     const observer = new IntersectionObserver(entries => entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); }), { threshold: .12 });
