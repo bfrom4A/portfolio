@@ -39,8 +39,11 @@
       backdrop-filter: blur(18px);
     }
     .nav-inner { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 24px; }
-    .brand { font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-    .brand span, .eyebrow { color: var(--cyan); }
+    .brand { position: relative; display: inline-block; overflow: hidden; font-size: .9rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: transparent; background: linear-gradient(112deg, var(--cyan) 18%, #ffffff 34%, var(--pink) 47%, var(--purple) 61%, var(--cyan) 82%); background-size: 240% 100%; background-clip: text; -webkit-background-clip: text; animation: brandBuild 5s cubic-bezier(.2,.8,.2,1) both, holographicSheen 9s 5s ease-in-out infinite; }
+    .brand:before, .brand:after { content: ""; position: absolute; z-index: 1; left: -115%; width: 115%; height: 2px; pointer-events: none; background: linear-gradient(90deg, transparent 0 32%, #ffffff 45%, var(--cyan) 52%, #ffffff 57%, transparent 70%); box-shadow: 0 -7px 10px rgba(99,230,255,.65), 0 7px 10px rgba(255,126,203,.55), 0 0 16px #ffffff, 0 0 28px var(--cyan); filter: blur(.15px); mix-blend-mode: screen; animation: brandLineSweep 5s cubic-bezier(.25,.8,.25,1) both; }
+    .brand:before { top: 24%; }
+    .brand:after { top: 72%; animation-delay: .35s; opacity: .7; }
+    .eyebrow { color: var(--cyan); }
     .nav-links { display: flex; gap: 22px; color: var(--muted); font-size: .92rem; }
     .nav-links a:hover { color: var(--text); }
     .menu { display: none; color: var(--text); background: none; border: 1px solid var(--line); border-radius: 10px; padding: 8px 11px; }
@@ -107,6 +110,8 @@
     textarea { min-height: 135px; resize: vertical; }
     input:focus, textarea:focus { outline: 2px solid rgba(99,230,255,.35); border-color: var(--cyan); }
     footer { padding: 32px 0; border-top: 1px solid var(--line); color: var(--muted); }
+    footer .container { display: flex; align-items: center; justify-content: space-between; gap: 24px; }
+    .footer-quote { margin: 0; text-align: right; color: transparent; font-size: 1.08rem; font-weight: 700; background: linear-gradient(112deg, var(--cyan) 18%, #ffffff 34%, var(--pink) 47%, var(--purple) 61%, var(--cyan) 82%); background-size: 240% 100%; background-clip: text; -webkit-background-clip: text; animation: holographicSheen 9s ease-in-out infinite; }
     .socials { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
     .socials a { padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); }
     .socials a:hover { color: var(--cyan); border-color: var(--cyan); }
@@ -150,6 +155,14 @@
     .maintenance-screen.active { display: grid; }
     .maintenance-card { width: min(520px, 100%); }
     .maintenance-countdown { margin: 24px 0; color: var(--cyan); font-size: clamp(2rem, 7vw, 4rem); font-weight: 800; line-height: 1; }
+    .loader-screen { position: fixed; inset: 0; z-index: 100; display: grid; place-items: center; background: var(--bg); transition: opacity .6s ease, visibility .6s ease; }
+    .loader-screen.done { opacity: 0; visibility: hidden; pointer-events: none; }
+    .loader-inner { width: min(420px, calc(100% - 48px)); text-align: center; }
+    .loader-brand { margin: 0; color: transparent; font-size: clamp(2.2rem, 9vw, 4.6rem); line-height: 1; letter-spacing: .08em; text-transform: uppercase; background: linear-gradient(112deg, var(--cyan), #fff, var(--pink), var(--purple), var(--cyan)); background-size: 240% 100%; background-clip: text; -webkit-background-clip: text; animation: holographicSheen 2.5s ease-in-out infinite; }
+    .loader-o { display: inline-block; width: .82em; height: .82em; margin: 0 .03em; border: .18em solid rgba(255,255,255,.34); border-top-color: var(--cyan); border-right-color: var(--pink); border-radius: 50%; vertical-align: -.08em; animation: loaderORotate 1s linear infinite; }
+    .loader-status { min-height: 1.5em; margin: 22px 0 13px; color: var(--muted); font-size: .9rem; }
+    .loader-track { height: 5px; overflow: hidden; border-radius: 99px; background: rgba(255,255,255,.12); }
+    .loader-progress { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink)); box-shadow: 0 0 18px var(--cyan); transition: width .08s linear; }
     .signup-form { display: none; }
     .signup-form.open { display: grid; }
     .text-button { cursor: pointer; color: var(--cyan); border: 0; padding: 0; background: none; font: inherit; }
@@ -159,7 +172,10 @@
     @keyframes float { 50% { transform: translateY(-13px) rotate(4deg); } }
     @keyframes planetDrift { 0% { transform: translate(-10px, 8px) rotate(-4deg); } 50% { transform: translate(18px, -14px) rotate(5deg); } 100% { transform: translate(-20px, 12px) rotate(-7deg); } }
     @keyframes planetRing { to { transform: rotate(385deg) scaleX(1.5); } }
+    @keyframes loaderORotate { to { transform: rotate(360deg); } }
     @keyframes holographicSheen { 0%, 100% { background-position: 100% 50%; } 50% { background-position: 0% 50%; } }
+    @keyframes brandBuild { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+    @keyframes brandLineSweep { 0% { left: -115%; opacity: 0; } 12% { opacity: 1; } 82% { opacity: 1; } 100% { left: 115%; opacity: 0; } }
     @keyframes avatarRotate { 0%, 100% { transform: rotate(-3deg) scale(1); } 50% { transform: rotate(3deg) scale(1.025); } }
     @keyframes avatarSwap { 0% { transform: rotateY(0) scale(1); } 50% { transform: rotateY(90deg) scale(.92); } 100% { transform: rotateY(0) scale(1); } }
     @media (max-width: 820px) {
@@ -174,14 +190,19 @@
       .stats-strip { grid-template-columns: repeat(2, 1fr); margin-top: 0; }
       .section-head { display: block; }
       .section-intro { margin-top: 15px; }
+      footer .container { flex-direction: column; gap: 8px; }
+      .footer-quote { text-align: center; }
     }
     @media (prefers-reduced-motion: reduce) { *, *:before, *:after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
   </style>
 </head>
 <body>
+  <div id="loader-screen" class="loader-screen" role="status" aria-live="polite" aria-label="Loading Jc Balog Portfolio">
+    <div class="loader-inner"><h1 class="loader-brand">Jc Bal<span class="loader-o" aria-label="Loading"></span>g</h1><p id="loader-status" class="loader-status">Preparing secure portfolio...</p><div class="loader-track"><div id="loader-progress" class="loader-progress"></div></div></div>
+  </div>
   <nav class="nav">
     <div class="container nav-inner">
-      <a class="brand" href="#top">Jc Balog <span>Portfolio</span></a>
+      <a class="brand" href="#top">Jc Balog</a>
       <button class="menu" aria-label="Toggle navigation">Menu</button>
       <div class="nav-links">
         <a href="#about">About</a><a href="#services">Services</a><a href="#work">Work</a><a href="#experience">Experience</a><a href="#contact">Contact</a><a class="admin-link" href="#admin">Master login</a>
@@ -302,8 +323,28 @@
   <div id="login-overlay" class="login-overlay"><div class="card login-card"><button class="close-login" type="button" aria-label="Close login">×</button><div class="eyebrow">Restricted access</div><h3>Master login</h3><form id="login-form" class="admin-form"><label>Email<input name="email" type="email" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="button primary" type="submit">Sign in</button><small id="login-status" class="form-status muted" aria-live="polite"></small></form><button id="github-login" class="button github-button" type="button">Sign in with GitHub</button><button id="show-signup" class="text-button" type="button" style="margin-top:16px">Create the first master account</button><form id="signup-form" class="admin-form signup-form"><label>Master email<input name="email" type="email" autocomplete="email" required></label><label>Create password<input name="password" type="password" minlength="6" autocomplete="new-password" required></label><button class="button primary" type="submit">Create master account</button><small id="signup-status" class="form-status muted" aria-live="polite"></small></form></div></div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <div id="maintenance-screen" class="maintenance-screen"><div class="card maintenance-card"><div class="eyebrow">Temporarily offline</div><h2>We’re making a few improvements.</h2><p id="maintenance-message" class="muted">Please check back soon.</p><div id="maintenance-countdown" class="maintenance-countdown">--:--:--</div><p id="maintenance-return" class="muted"></p><button id="maintenance-login" class="button primary" type="button">Master login</button></div></div>
-  <footer><div class="container">© 2025 Jc Balog</div></footer>
+  <footer><div class="container"><div>© 2025 Jc Balog. All rights reserved.</div><p class="footer-quote">“Reliable support. Remarkable momentum.”</p></div></footer>
   <script async src="https://tenor.com/embed.js"></script>
+  <script>
+    (() => {
+      const duration = 6000;
+      const startedAt = performance.now();
+      const progress = document.getElementById('loader-progress');
+      const status = document.getElementById('loader-status');
+      const screen = document.getElementById('loader-screen');
+      const phases = [[0, 'Preparing secure portfolio...'], [.28, 'Checking connection...'], [.56, 'Loading portfolio content...'], [.8, 'Finalizing interface...']];
+      const tick = now => {
+        const ratio = Math.min((now - startedAt) / duration, 1);
+        progress.style.width = `${Math.round(ratio * 100)}%`;
+        const activePhase = [...phases].reverse().find(phase => ratio >= phase[0]) || phases[0];
+        status.textContent = activePhase[1];
+        if (ratio < 1) requestAnimationFrame(tick);
+        else { status.textContent = 'Ready.'; setTimeout(() => screen.classList.add('done'), 250); }
+      };
+      requestAnimationFrame(tick);
+      setTimeout(() => { progress.style.width = '100%'; status.textContent = 'Ready.'; screen.classList.add('done'); }, duration + 500);
+    })();
+  </script>
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
     import { getAuth, GithubAuthProvider, onAuthStateChanged, signInWithPopup, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, deleteUser } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
