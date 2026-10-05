@@ -247,7 +247,7 @@
       <div class="admin-grid">
         <nav class="admin-tabs" aria-label="Editor sections"><button class="admin-tab active" data-tab="profile">Profile</button><button class="admin-tab" data-tab="content">Page content</button><button class="admin-tab" data-tab="skills">Skills & background</button><button class="admin-tab" data-tab="education">Education</button><button class="admin-tab" data-tab="portfolio">Portfolio & sites</button><button class="admin-tab" data-tab="inquiries">Inquiries</button></nav>
         <div>
-          <div class="admin-panel active" data-panel="profile"><div class="card"><h3>Profile details</h3><form id="profile-form" class="admin-form"><div class="admin-row"><label>Display name<input name="name" required></label><label>GitHub image URL<input name="photo" type="url" placeholder="https://raw.githubusercontent.com/..."></label></div><label>Headline<input name="headline" required></label><label>Bio<textarea name="bio" required></textarea></label><label>Location<input name="location"></label><button class="button primary" type="submit">Save profile</button><small class="form-status muted" data-status="profile"></small></form></div></div>
+          <div class="admin-panel active" data-panel="profile"><div class="card"><h3>Profile details</h3><form id="profile-form" class="admin-form"><div class="admin-row"><label>Display name<input name="name" required></label><label>GitHub image URL<input name="photo" type="url" placeholder="https://github.com/user/repo/blob/main/photo.jpg"></label></div><label>Headline<input name="headline" required></label><label>Bio<textarea name="bio" required></textarea></label><label>Location<input name="location"></label><button class="button primary" type="submit">Save profile</button><small class="form-status muted" data-status="profile"></small></form></div></div>
           <div class="admin-panel" data-panel="content"><div class="card"><h3>Page content</h3><form id="content-form" class="admin-form"><label>Services <small>One item per line: title | description</small><textarea name="services"></textarea></label><label>Favorite tools<input name="tools"></label><label>Testimonials <small>One item per line: quote | author</small><textarea name="testimonials"></textarea></label><div class="admin-row"><label>Contact email<input name="email" type="email"></label><label>Social links <small>One item per line: label | URL</small><textarea name="socials"></textarea></label></div><button class="button primary" type="submit">Save page content</button><small class="form-status muted" data-status="content"></small></form></div></div>
           <div class="admin-panel" data-panel="skills"><div class="card"><h3>Skills and background</h3><form id="skills-form" class="admin-form"><label>Skills <small>One skill per line</small><textarea name="skills" placeholder="Project coordination&#10;Research"></textarea></label><label>Background / experience <small>One role per line, using: year | role | description</small><textarea name="background" placeholder="2023 - Now | Independent VA | Supporting founders..."></textarea></label><button class="button primary" type="submit">Save background</button><small class="form-status muted" data-status="skills"></small></form></div></div>
           <div class="admin-panel" data-panel="education"><div class="card"><h3>Education and credentials</h3><form id="education-form" class="admin-form"><label>Education <small>One item per line, using: year | school | qualification</small><textarea name="education" placeholder="2020 | University | Business Administration"></textarea></label><label>Certifications <small>One item per line</small><textarea name="certifications"></textarea></label><button class="button primary" type="submit">Save education</button><small class="form-status muted" data-status="education"></small></form></div></div>
@@ -327,14 +327,18 @@
       openAdmin();
     }
     function saveLocal() { localStorage.setItem(localKey, JSON.stringify(content)); }
+    function ensureWebOrigin() {
+      if (location.protocol === 'file:') throw new Error('Firebase login requires a web address. Run this page on localhost or deploy it, then add that domain in Firebase Authentication settings.');
+    }
     async function updateSignupAvailability() {
       const signupButton = document.getElementById('show-signup');
       if (!db) { signupButton.disabled = true; signupButton.textContent = 'Configure Firebase first'; return; }
       try { const lock = await getDoc(doc(db, 'masterControl', 'config')); if (lock.exists()) { signupButton.disabled = true; signupButton.textContent = 'Master account already created'; } } catch (error) { signupButton.textContent = 'Set Firestore rules to enable first setup'; }
     }
     async function saveContent() {
+      if (db && !auth?.currentUser) throw new Error('Your master session has expired. Please sign in again.');
+      if (db) await setDoc(doc(db, 'siteContent', 'main'), content);
       saveLocal();
-      if (db && auth?.currentUser) await setDoc(doc(db, 'siteContent', 'main'), content);
       renderPortfolio();
     }
     function lines(value) { return value.split('\n').map(item => item.trim()).filter(Boolean); }
@@ -352,11 +356,18 @@
       document.querySelector('#content-form [name="socials"]').value = content.contact.socials.map(item => item.join(' | ')).join('\n');
     }
     function showStatus(name, message) { document.querySelector(`[data-status="${name}"]`).textContent = message; }
+    function mediaUrl(value) {
+      if (!value) return '';
+      const githubBlob = value.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/(.+)$/);
+      return githubBlob ? `https://raw.githubusercontent.com/${githubBlob[1]}/${githubBlob[2]}/${githubBlob[3]}` : value;
+    }
     function renderPublicDetails() {
       const profilePhoto = document.getElementById('profile-photo');
-      profilePhoto.src = content.profile.photo || '';
-      profilePhoto.classList.toggle('visible', Boolean(content.profile.photo));
-      document.querySelector('.orb').style.display = content.profile.photo ? 'none' : 'block';
+      const photoUrl = mediaUrl(content.profile.photo);
+      profilePhoto.onerror = () => { profilePhoto.removeAttribute('src'); profilePhoto.classList.remove('visible'); document.querySelector('.orb').style.display = 'block'; };
+      profilePhoto.src = photoUrl;
+      profilePhoto.classList.toggle('visible', Boolean(photoUrl));
+      document.querySelector('.orb').style.display = photoUrl ? 'none' : 'block';
       document.querySelector('.hero h1').innerHTML = `${content.profile.headline.split('. ')[0]}.<br><em>${content.profile.headline.split('. ').slice(1).join('. ')}</em>`;
       document.querySelector('.hero .lead').textContent = content.profile.bio;
       document.querySelector('#about h2').textContent = content.profile.headline;
@@ -386,14 +397,14 @@
       onSnapshot(query(collection(db, 'inquiries'), orderBy('createdAt', 'desc')), snapshot => { document.getElementById('inquiry-list').innerHTML = snapshot.docs.map(item => { const inquiry = item.data(); return `<div class="admin-item"><strong>${inquiry.name} · ${inquiry.email}</strong><span>${inquiry.message}</span></div>`; }).join('') || '<p class="muted">No inquiries yet.</p>'; });
     }
 
-    document.getElementById('login-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const status = document.getElementById('login-status'); try { if (!auth) throw new Error('Firebase is not configured.'); await signInWithEmailAndPassword(auth, form.get('email'), form.get('password')); await authorizeMaster(); status.textContent = ''; } catch (error) { status.textContent = error.message; } });
-    document.getElementById('github-login').addEventListener('click', async () => { const status = document.getElementById('login-status'); try { if (!auth) throw new Error('Firebase is not configured.'); await signInWithPopup(auth, new GithubAuthProvider()); await authorizeMaster(); status.textContent = ''; } catch (error) { status.textContent = error.message; } });
+    document.getElementById('login-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const status = document.getElementById('login-status'); try { ensureWebOrigin(); if (!auth) throw new Error('Firebase is not configured.'); await signInWithEmailAndPassword(auth, form.get('email'), form.get('password')); await authorizeMaster(); status.textContent = ''; } catch (error) { status.textContent = error.message; } });
+    document.getElementById('github-login').addEventListener('click', async () => { const status = document.getElementById('login-status'); try { ensureWebOrigin(); if (!auth) throw new Error('Firebase is not configured.'); await signInWithPopup(auth, new GithubAuthProvider()); await authorizeMaster(); status.textContent = ''; } catch (error) { status.textContent = error.message; } });
     document.getElementById('show-signup').addEventListener('click', event => { event.currentTarget.style.display = 'none'; document.getElementById('signup-form').classList.add('open'); });
     document.getElementById('signup-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const status = document.getElementById('signup-status'); let newUser = null; try { if (!auth || !db) throw new Error('Firebase is not configured.'); const account = await createUserWithEmailAndPassword(auth, form.get('email'), form.get('password')); newUser = account.user; await runTransaction(db, async transaction => { const lockRef = doc(db, 'masterControl', 'config'); const lock = await transaction.get(lockRef); if (lock.exists()) throw new Error('A master account already exists.'); transaction.set(lockRef, { uid: newUser.uid, createdAt: serverTimestamp() }); }); status.textContent = 'Master account created. You can now sign in.'; } catch (error) { if (newUser) await deleteUser(newUser).catch(() => {}); status.textContent = error.code === 'permission-denied' ? 'Firestore denied the master lock. Publish the setup rules from the instructions.' : error.message; } });
     document.querySelector('.close-login').addEventListener('click', () => overlay.classList.remove('open'));
     document.getElementById('logout-button').addEventListener('click', () => auth && signOut(auth));
     document.querySelectorAll('.admin-tab').forEach(tab => tab.addEventListener('click', () => { document.querySelectorAll('.admin-tab, .admin-panel').forEach(item => item.classList.remove('active')); tab.classList.add('active'); document.querySelector(`[data-panel="${tab.dataset.tab}"]`).classList.add('active'); }));
-    document.getElementById('profile-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.profile = Object.fromEntries(form.entries()); await saveContent(); showStatus('profile', 'Saved.'); });
+    document.getElementById('profile-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const previousProfile = content.profile; content.profile = Object.fromEntries(form.entries()); try { await saveContent(); showStatus('profile', 'Profile saved.'); } catch (error) { content.profile = previousProfile; showStatus('profile', error.code === 'permission-denied' ? 'Firestore rejected this save. Confirm the master account and Firestore Rules.' : error.message); } });
     document.getElementById('content-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.services = lines(form.get('services')).map(item => item.split('|').map(part => part.trim())); content.tools = form.get('tools'); content.testimonials = lines(form.get('testimonials')).map(item => item.split('|').map(part => part.trim())); content.contact = { email: form.get('email'), socials: lines(form.get('socials')).map(item => item.split('|').map(part => part.trim())) }; await saveContent(); showStatus('content', 'Saved.'); });
     document.getElementById('skills-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.skills = lines(form.get('skills')); content.background = lines(form.get('background')).map(item => item.split('|').map(part => part.trim())); await saveContent(); showStatus('skills', 'Saved.'); });
     document.getElementById('education-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.education = lines(form.get('education')).map(item => item.split('|').map(part => part.trim())); content.certifications = lines(form.get('certifications')); await saveContent(); showStatus('education', 'Saved.'); });
