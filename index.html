@@ -122,6 +122,12 @@
     .login-card { width: min(430px, 100%); }
     .close-login { float: right; cursor: pointer; color: var(--muted); border: 0; background: none; font-size: 1.2rem; }
     .form-status { min-height: 1.4em; }
+    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 40; max-width: min(380px, calc(100% - 44px)); padding: 13px 16px; border: 1px solid var(--cyan); border-radius: 12px; color: var(--text); background: var(--panel-strong); box-shadow: var(--shadow); opacity: 0; transform: translateY(12px); pointer-events: none; transition: .25s ease; }
+    .toast.visible { opacity: 1; transform: none; }
+    .toast.error { border-color: var(--pink); }
+    .maintenance-screen { display: none; position: fixed; inset: 0; z-index: 25; place-items: center; padding: 24px; text-align: center; background: var(--bg); }
+    .maintenance-screen.active { display: grid; }
+    .maintenance-card { width: min(520px, 100%); }
     .signup-form { display: none; }
     .signup-form.open { display: grid; }
     .text-button { cursor: pointer; color: var(--cyan); border: 0; padding: 0; background: none; font: inherit; }
@@ -248,7 +254,7 @@
         <nav class="admin-tabs" aria-label="Editor sections"><button class="admin-tab active" data-tab="profile">Profile</button><button class="admin-tab" data-tab="content">Page content</button><button class="admin-tab" data-tab="skills">Skills & background</button><button class="admin-tab" data-tab="education">Education</button><button class="admin-tab" data-tab="portfolio">Portfolio & sites</button><button class="admin-tab" data-tab="inquiries">Inquiries</button></nav>
         <div>
           <div class="admin-panel active" data-panel="profile"><div class="card"><h3>Profile details</h3><form id="profile-form" class="admin-form"><div class="admin-row"><label>Display name<input name="name" required></label><label>GitHub image URL<input name="photo" type="url" placeholder="https://github.com/user/repo/blob/main/photo.jpg"></label></div><label>Headline<input name="headline" required></label><label>Bio<textarea name="bio" required></textarea></label><label>Location<input name="location"></label><button class="button primary" type="submit">Save profile</button><small class="form-status muted" data-status="profile"></small></form></div></div>
-          <div class="admin-panel" data-panel="content"><div class="card"><h3>Page content</h3><form id="content-form" class="admin-form"><label>Services <small>One item per line: title | description</small><textarea name="services"></textarea></label><label>Favorite tools<input name="tools"></label><label>Testimonials <small>One item per line: quote | author</small><textarea name="testimonials"></textarea></label><div class="admin-row"><label>Contact email<input name="email" type="email"></label><label>Social links <small>One item per line: label | URL</small><textarea name="socials"></textarea></label></div><button class="button primary" type="submit">Save page content</button><small class="form-status muted" data-status="content"></small></form></div></div>
+          <div class="admin-panel" data-panel="content"><div class="card"><h3>Page content</h3><form id="content-form" class="admin-form"><label class="toggle-label"><input name="maintenance" type="checkbox"> Enable maintenance mode <small>Visitors will see the maintenance screen while this is enabled.</small></label><label>Services <small>One item per line: title | description</small><textarea name="services"></textarea></label><label>Favorite tools<input name="tools"></label><label>Testimonials <small>One item per line: quote | author</small><textarea name="testimonials"></textarea></label><div class="admin-row"><label>Contact email<input name="email" type="email"></label><label>Social links <small>One item per line: label | URL</small><textarea name="socials"></textarea></label></div><button class="button primary" type="submit">Save page content</button><small class="form-status muted" data-status="content"></small></form></div></div>
           <div class="admin-panel" data-panel="skills"><div class="card"><h3>Skills and background</h3><form id="skills-form" class="admin-form"><label>Skills <small>One skill per line</small><textarea name="skills" placeholder="Project coordination&#10;Research"></textarea></label><label>Background / experience <small>One role per line, using: year | role | description</small><textarea name="background" placeholder="2023 - Now | Independent VA | Supporting founders..."></textarea></label><button class="button primary" type="submit">Save background</button><small class="form-status muted" data-status="skills"></small></form></div></div>
           <div class="admin-panel" data-panel="education"><div class="card"><h3>Education and credentials</h3><form id="education-form" class="admin-form"><label>Education <small>One item per line, using: year | school | qualification</small><textarea name="education" placeholder="2020 | University | Business Administration"></textarea></label><label>Certifications <small>One item per line</small><textarea name="certifications"></textarea></label><button class="button primary" type="submit">Save education</button><small class="form-status muted" data-status="education"></small></form></div></div>
           <div class="admin-panel" data-panel="portfolio"><div class="card"><h3>Add a portfolio project or live website</h3><form id="portfolio-form" class="admin-form"><label>Project title<input name="title" required></label><div class="admin-row"><label>Website URL<input name="url" type="url" placeholder="https://example.com" required></label><label>Cover image URL<input name="image" type="url" placeholder="https://..."></label></div><label>Description<textarea name="description"></textarea></label><button class="button primary" type="submit">Add project</button><small class="form-status muted" data-status="portfolio"></small></form><div id="admin-projects" class="admin-list" style="margin-top:22px"></div></div></div>
@@ -258,6 +264,8 @@
     </div>
   </section>
   <div id="login-overlay" class="login-overlay"><div class="card login-card"><button class="close-login" type="button" aria-label="Close login">×</button><div class="eyebrow">Restricted access</div><h3>Master login</h3><form id="login-form" class="admin-form"><label>Email<input name="email" type="email" autocomplete="username" required></label><label>Password<input name="password" type="password" autocomplete="current-password" required></label><button class="button primary" type="submit">Sign in</button><small id="login-status" class="form-status muted" aria-live="polite"></small></form><button id="github-login" class="button github-button" type="button">Sign in with GitHub</button><button id="show-signup" class="text-button" type="button" style="margin-top:16px">Create the first master account</button><form id="signup-form" class="admin-form signup-form"><label>Master email<input name="email" type="email" autocomplete="email" required></label><label>Create password<input name="password" type="password" minlength="6" autocomplete="new-password" required></label><button class="button primary" type="submit">Create master account</button><small id="signup-status" class="form-status muted" aria-live="polite"></small></form></div></div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="maintenance-screen" class="maintenance-screen"><div class="card maintenance-card"><div class="eyebrow">Temporarily offline</div><h2>We’re making a few improvements.</h2><p class="muted">Please check back soon. The site will be available again shortly.</p><button id="maintenance-login" class="button primary" type="button">Master login</button></div></div>
   <footer><div class="container">© 2025 Jc Balog</div></footer>
   <script type="module">
     import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js';
@@ -277,6 +285,7 @@
     const localKey = 'alex-portfolio-content';
     const defaultContent = {
       profile: { name: 'Alex Morgan', photo: '', headline: 'Calm systems. Bold results.', bio: 'Hi, I’m Alex — a detail-driven virtual assistant helping founders and growing teams turn busywork into clear, reliable momentum.', location: 'Based remotely · Working across time zones' },
+      maintenance: false,
       services: [['Executive support', 'Calendar management, inbox organization, travel research, meeting notes, and day-to-day admin.'], ['Content & social', 'Content scheduling, community support, simple graphics, repurposing, and consistent brand presence.'], ['Operations', 'SOPs, project coordination, CRM upkeep, research, data entry, and workflow improvements.']],
       tools: 'Notion · Asana · ClickUp · Google Workspace · Slack · Canva · Trello · Airtable · Calendly · Loom',
       testimonials: [['Alex brought order to a project that felt impossible. I finally had space to focus on the creative work.', 'Jamie R., Creative Founder'], ['Proactive, thoughtful, and incredibly dependable. Alex feels like a true extension of our team.', 'Morgan T., Agency Director'], ['The systems Alex created still save us hours every week. An absolute joy to work with.', 'Taylor K., Coach']],
@@ -332,8 +341,8 @@
       }
     });
 
-    function openAdmin() { overlay.classList.remove('open'); admin.classList.add('active'); admin.scrollIntoView({ behavior: 'smooth' }); fillForms(); renderAdminProjects(); loadInquiries(); resetSessionTimer(); }
-    function closeAdmin() { admin.classList.remove('active'); clearTimeout(sessionTimer); }
+    function openAdmin() { overlay.classList.remove('open'); admin.classList.add('active'); admin.scrollIntoView({ behavior: 'smooth' }); fillForms(); renderAdminProjects(); loadInquiries(); resetSessionTimer(); renderMaintenance(); }
+    function closeAdmin() { admin.classList.remove('active'); clearTimeout(sessionTimer); renderMaintenance(); }
     function resetSessionTimer() {
       clearTimeout(sessionTimer);
       if (!auth?.currentUser) return;
@@ -372,12 +381,21 @@
       document.querySelector('#education-form [name="education"]').value = content.education.map(item => item.join(' | ')).join('\n');
       document.querySelector('#education-form [name="certifications"]').value = content.certifications.join('\n');
       document.querySelector('#content-form [name="services"]').value = content.services.map(item => item.join(' | ')).join('\n');
+      document.querySelector('#content-form [name="maintenance"]').checked = content.maintenance;
       document.querySelector('#content-form [name="tools"]').value = content.tools;
       document.querySelector('#content-form [name="testimonials"]').value = content.testimonials.map(item => item.join(' | ')).join('\n');
       document.querySelector('#content-form [name="email"]').value = content.contact.email;
       document.querySelector('#content-form [name="socials"]').value = content.contact.socials.map(item => item.join(' | ')).join('\n');
     }
     function showStatus(name, message) { document.querySelector(`[data-status="${name}"]`).textContent = message; }
+    function renderMaintenance() { document.getElementById('maintenance-screen').classList.toggle('active', Boolean(content.maintenance) && !admin.classList.contains('active')); }
+    let toastTimer = null;
+    function notify(message, error = false) { const toast = document.getElementById('toast'); toast.textContent = message; toast.classList.toggle('error', error); toast.classList.add('visible'); clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('visible'), 3500); }
+    async function saveForm(name, update) {
+      const previous = JSON.stringify(content);
+      try { update(); await saveContent(); showStatus(name, 'Saved successfully.'); notify('Content updated successfully.'); return true; }
+      catch (error) { content = normalizeContent(JSON.parse(previous)); renderPublicDetails(); renderPortfolio(); fillForms(); const message = error.code === 'permission-denied' ? 'Firestore rejected the save. Confirm the master account and Firestore Rules.' : error.message; showStatus(name, message); notify(message, true); return false; }
+    }
     function mediaUrl(value) {
       if (!value) return '';
       const githubBlob = value.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/blob\/(.+)$/);
@@ -385,6 +403,7 @@
     }
     function renderPublicDetails() {
       const profilePhoto = document.getElementById('profile-photo');
+      renderMaintenance();
       const photoUrl = mediaUrl(content.profile.photo);
       profilePhoto.onerror = () => { profilePhoto.removeAttribute('src'); profilePhoto.classList.remove('visible'); document.querySelector('.orb').style.display = 'block'; };
       profilePhoto.src = photoUrl;
@@ -428,11 +447,12 @@
     admin.addEventListener('input', resetSessionTimer);
     admin.addEventListener('change', resetSessionTimer);
     document.querySelector('.admin-tabs').addEventListener('click', event => { const tab = event.target.closest('.admin-tab'); if (!tab) return; event.preventDefault(); const panel = document.querySelector(`[data-panel="${tab.dataset.tab}"]`); if (!panel) return; document.querySelectorAll('.admin-tab, .admin-panel').forEach(item => item.classList.remove('active')); tab.classList.add('active'); panel.classList.add('active'); });
-    document.getElementById('profile-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const previousProfile = content.profile; content.profile = Object.fromEntries(form.entries()); try { await saveContent(); showStatus('profile', 'Profile saved.'); } catch (error) { content.profile = previousProfile; showStatus('profile', error.code === 'permission-denied' ? 'Firestore rejected this save. Confirm the master account and Firestore Rules.' : error.message); } });
-    document.getElementById('content-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.services = lines(form.get('services')).map(item => item.split('|').map(part => part.trim())); content.tools = form.get('tools'); content.testimonials = lines(form.get('testimonials')).map(item => item.split('|').map(part => part.trim())); content.contact = { email: form.get('email'), socials: lines(form.get('socials')).map(item => item.split('|').map(part => part.trim())) }; await saveContent(); showStatus('content', 'Saved.'); });
-    document.getElementById('skills-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.skills = lines(form.get('skills')); content.background = lines(form.get('background')).map(item => item.split('|').map(part => part.trim())); await saveContent(); showStatus('skills', 'Saved.'); });
-    document.getElementById('education-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.education = lines(form.get('education')).map(item => item.split('|').map(part => part.trim())); content.certifications = lines(form.get('certifications')); await saveContent(); showStatus('education', 'Saved.'); });
-    document.getElementById('portfolio-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); content.portfolio.push(Object.fromEntries(form.entries())); await saveContent(); renderAdminProjects(); event.currentTarget.reset(); showStatus('portfolio', 'Project added.'); });
+    document.getElementById('profile-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); await saveForm('profile', () => { content.profile = Object.fromEntries(form.entries()); }); });
+    document.getElementById('content-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); await saveForm('content', () => { content.maintenance = form.get('maintenance') === 'on'; content.services = lines(form.get('services')).map(item => item.split('|').map(part => part.trim())); content.tools = form.get('tools'); content.testimonials = lines(form.get('testimonials')).map(item => item.split('|').map(part => part.trim())); content.contact = { email: form.get('email'), socials: lines(form.get('socials')).map(item => item.split('|').map(part => part.trim())) }; }); });
+    document.getElementById('maintenance-login').addEventListener('click', () => { overlay.classList.add('open'); updateSignupAvailability(); });
+    document.getElementById('skills-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); await saveForm('skills', () => { content.skills = lines(form.get('skills')); content.background = lines(form.get('background')).map(item => item.split('|').map(part => part.trim())); }); });
+    document.getElementById('education-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); await saveForm('education', () => { content.education = lines(form.get('education')).map(item => item.split('|').map(part => part.trim())); content.certifications = lines(form.get('certifications')); }); });
+    document.getElementById('portfolio-form').addEventListener('submit', async event => { event.preventDefault(); const form = new FormData(event.currentTarget); const saved = await saveForm('portfolio', () => { content.portfolio.push(Object.fromEntries(form.entries())); }); if (saved) { renderAdminProjects(); event.currentTarget.reset(); } });
     document.querySelector('form[onsubmit]').addEventListener('submit', async event => { if (db) { const form = new FormData(event.currentTarget); await addDoc(collection(db, 'inquiries'), { name: form.get('name'), email: form.get('email'), message: form.get('message'), createdAt: serverTimestamp() }); } });
 
     try { if (db) { const saved = await getDoc(doc(db, 'siteContent', 'main')); if (saved.exists()) { content = normalizeContent(saved.data()); saveLocal(); } } } catch (error) { console.warn('Could not load Firebase content:', error); }
